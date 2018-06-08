@@ -1,0 +1,20 @@
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+
+# JavaScript - https://developer.mozilla.org/ja/docs/Web/JavaScript
+# TypeScript - https://www.typescriptlang.org/
+[*.{js,ts,tsx,json}]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+# CSS, Sass, SCSS - http://sass-lang.com/
+[*.{sass,scss,css}]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
