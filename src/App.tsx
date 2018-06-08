@@ -1,21 +1,50 @@
 import * as React from 'react'
+import ReactDataSheet from 'react-datasheet'
+import 'react-datasheet/lib/react-datasheet.css'
 import './App.css'
+import TextDataEditor from './DataEditor'
+import DataSheet, { DataType, GridElement } from './DataSheet'
 
-import logo from './logo.svg'
+interface State {
+  grid: GridElement[][]
+}
 
-class App extends React.Component {
+class App extends React.Component<{}, State> {
+  constructor(props: {}) {
+    super(props)
+    this.state = {
+      grid: [
+        [{ value: 'Hello' }, { value: 'Hey' }],
+        [{ value: 'Good morning' }, { value: 'Good night' }],
+      ],
+    }
+  }
+
   public render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
+        <DataSheet
+          data={this.state.grid}
+          valueRenderer={this.valueRenderer}
+          onCellsChanged={this.handleCellsChange}
+          dataEditor={TextDataEditor}
+        />
       </div>
     )
+  }
+
+  private handleCellsChange = (
+    changes: ReactDataSheet.CellsChangedArgs<GridElement, DataType>,
+  ) => {
+    const grid = this.state.grid.map(row => [...row])
+    changes.forEach(({ cell, row, col, value }) => {
+      grid[row][col] = { ...grid[row][col], value }
+    })
+    this.setState({ grid })
+  }
+
+  private valueRenderer(cell: GridElement) {
+    return cell.value
   }
 }
 
