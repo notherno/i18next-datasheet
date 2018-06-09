@@ -1,0 +1,16 @@
+{
+  "greetings": {
+    "general": "Guten Tag",
+    "casual": "Hallo",
+    "situational": {
+      "on_morning": "Guten Morgen",
+      "on_afternoon": "Guten Abent",
+      "to_sleep": "Gute Nacht"
+    }
+  },
+  "fruits": {
+    "apple": "Apfel",
+    "lemon": "Zitrone",
+    "orange": "Orange"
+  }
+}

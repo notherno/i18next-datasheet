@@ -2,9 +2,10 @@
   "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
   "rules": {
     "interface-name": false,
-    "max-classes-per-file": false
+    "max-classes-per-file": false,
+    "no-console": false
   },
   "linterOptions": {
-    "exclude": ["config/**/*.js", "node_modules/**/*.ts"]
+    "exclude": ["config/**/*.js", "node_modules/**/*.ts", "**/*.json"]
   }
 }

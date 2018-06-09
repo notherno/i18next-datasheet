@@ -1,5 +1,15 @@
-.App {
-  text-align: center;
+.message:not(:first-child) {
+  margin: 0;
+  padding-left: 1em;
+}
+
+.message:first-child {
+  padding: 0.5em;
+}
+
+.message .message-body {
+  border: none;
+  padding: 0;
 }
 
 textarea.data-editor {
@@ -8,6 +18,11 @@ textarea.data-editor {
   text-align: left;
   resize: none;
   outline: none;
+}
+
+.data-grid {
+  width: 100%;
+  margin: 1em 0 1.5em;
 }
 
 .data-grid-container .data-grid .cell {

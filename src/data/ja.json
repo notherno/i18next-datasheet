@@ -1,0 +1,15 @@
+{
+  "greetings": {
+    "general": "こんにちは",
+    "casual": "やあ",
+    "situational": {
+      "on_morning": "おはようございます",
+      "to_sleep": "おやすみなさい"
+    }
+  },
+  "fruits": {
+    "apple": "りんご",
+    "lemon": "レモン",
+    "orange": "オレンジ"
+  }
+}

@@ -1,5 +1,5 @@
-import * as classnames from 'classnames'
-import * as React from 'react'
+import classnames from 'classnames'
+import React from 'react'
 import ReactDataSheet from 'react-datasheet'
 import DataEditor from './DataEditor'
 
@@ -14,6 +14,8 @@ class DataSheet extends ReactDataSheet<GridElement, DataType> {}
 
 interface Props {
   data: GridElement[][]
+  columns: string[]
+  keys: string[]
   update(data: Props['data']): void
 }
 
@@ -55,8 +57,9 @@ export default class CustomDataSheet extends React.PureComponent<Props> {
     <table className={classnames(props.className, 'table', 'is-striped')}>
       <thead>
         <tr>
-          <th>Greetings</th>
-          <th>Foo</th>
+          {['Key', ...this.props.columns].map(column => (
+            <td key={column}>{column}</td>
+          ))}
         </tr>
       </thead>
       <tbody>{props.children}</tbody>
