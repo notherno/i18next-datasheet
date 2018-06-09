@@ -7,6 +7,7 @@
     "babel-jest": "^22.1.0",
     "babel-loader": "^7.1.2",
     "babel-preset-react-app": "^3.1.1",
+    "body-parser": "^1.18.3",
     "bulma": "^0.7.1",
     "case-sensitive-paths-webpack-plugin": "2.1.1",
     "chalk": "1.1.3",

@@ -90,6 +90,9 @@ class App extends React.Component<{}, State> {
     return (
       <div className="container">
         {this.renderModule()}
+        <button className="button" onClick={this.save}>
+          Save
+        </button>
         <div className="columns">
           {this.state.data.map(m => (
             <div key={m.key} className="column">
@@ -100,6 +103,16 @@ class App extends React.Component<{}, State> {
         </div>
       </div>
     )
+  }
+
+  private save = () => {
+    fetch('/save', {
+      body: JSON.stringify(this.state.data.map(m => serializeModule(m))),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+    }).then(() => alert('saved'))
   }
 
   private handleUpdate = (modulePath: string[]) => (
