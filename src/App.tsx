@@ -1,18 +1,25 @@
 import * as React from 'react'
 import 'react-datasheet/lib/react-datasheet.css'
 import './App.css'
-import allData, { columns } from './data'
 import DataSheet, { GridElement } from './DataSheet'
 import {
   accessModule,
   accessText,
   extractBundles,
+  LocaleBundle,
   LocaleModule,
   serializeModule,
 } from './lib/dataLoader'
 
+export type BundleResponse = Array<{ [lang: string]: LocaleBundle }>
+
+interface Props {
+  initialData: BundleResponse
+}
+
 interface State {
   data: LocaleModule[]
+  langs: string[]
 }
 
 function updateTexts(
@@ -41,16 +48,24 @@ function updateTexts(
   }
 }
 
-class App extends React.Component<{}, State> {
-  constructor(props: {}) {
+class App extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props)
+
+    const { initialData } = props
+
+    const langs = initialData.map(bundle => Object.keys(bundle)[0])
+
+    const bundles = initialData.map((bundle, index) => bundle[langs[index]])
+
     this.state = {
-      data: extractBundles(columns, allData),
+      data: extractBundles(langs, bundles),
+      langs,
     }
   }
 
   public renderModule = (path: string[] = []): JSX.Element => {
-    const { data } = this.state
+    const { data, langs } = this.state
     const target = accessModule(data[0], path)
 
     return (
@@ -72,7 +87,7 @@ class App extends React.Component<{}, State> {
                 }),
               ])}
               update={this.handleUpdate(path)}
-              columns={columns}
+              columns={langs}
               keys={target.texts.map(text => text.key)}
             />
           )}
@@ -106,7 +121,7 @@ class App extends React.Component<{}, State> {
   }
 
   private save = () => {
-    fetch('/save', {
+    fetch('/data', {
       body: JSON.stringify(this.state.data.map(m => serializeModule(m))),
       headers: {
         'Content-Type': 'application/json',

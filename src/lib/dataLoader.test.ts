@@ -1,5 +1,10 @@
-import en from '../data/en.json'
 import { extractBundles } from './dataLoader'
+
+const en = {
+  greetings: {
+    hello: 'hi',
+  },
+}
 
 describe('extractBundle', () => {
   it('loads resource bundles', () => {
