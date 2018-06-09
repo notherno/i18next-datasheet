@@ -57,7 +57,7 @@ class App extends React.Component<{}, State> {
       <section className="message">
         {path.length > 0 && (
           <div className="message-header">
-            <p>{path.join('.')}</p>
+            <p>{path[path.length - 1]}</p>
           </div>
         )}
         <div className="message-body">
