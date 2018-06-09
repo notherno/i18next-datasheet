@@ -115,7 +115,9 @@ class App extends React.Component<Props, State> {
           {this.state.data.map(m => (
             <div key={m.key} className="column">
               <h2 className="title is-5">{m.key}</h2>
-              <pre>{JSON.stringify(serializeModule(m)[m.key], null, '  ')}</pre>
+              <pre className="json-viewer">
+                {JSON.stringify(serializeModule(m)[m.key], null, '  ')}
+              </pre>
             </div>
           ))}
         </div>

@@ -20,6 +20,10 @@ textarea.data-editor {
   outline: none;
 }
 
+pre.json-viewer {
+  font-family: monospace;
+}
+
 .data-grid {
   width: 100%;
   margin: 1em 0 1.5em;
