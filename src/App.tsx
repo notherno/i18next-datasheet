@@ -11,7 +11,10 @@ import {
   serializeModule,
 } from './lib/dataLoader'
 
-export type BundleResponse = Array<{ [lang: string]: LocaleBundle }>
+export interface BundleResponse {
+  langs: string[]
+  bundle: { [lang: string]: LocaleBundle }
+}
 
 interface Props {
   initialData: BundleResponse
@@ -54,9 +57,9 @@ class App extends React.Component<Props, State> {
 
     const { initialData } = props
 
-    const langs = initialData.map(bundle => Object.keys(bundle)[0])
+    const langs = initialData.langs
 
-    const bundles = initialData.map((bundle, index) => bundle[langs[index]])
+    const bundles = langs.map(lang => initialData.bundle[lang])
 
     this.state = {
       data: extractBundles(langs, bundles),
@@ -122,7 +125,11 @@ class App extends React.Component<Props, State> {
 
   private save = () => {
     fetch('/data', {
-      body: JSON.stringify(this.state.data.map(m => serializeModule(m))),
+      body: JSON.stringify(
+        this.state.data
+          .map(m => serializeModule(m))
+          .reduce((data, bundle) => ({ ...data, ...bundle }), {}),
+      ),
       headers: {
         'Content-Type': 'application/json',
       },

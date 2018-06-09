@@ -99,26 +99,33 @@ module.exports = function(proxy, allowedHost) {
 
       app.get('/data', async (req, res) => {
         const langs = ['en', 'de', 'ja']
-        const values = (await Promise.all(
+        const bundle = (await Promise.all(
           langs.map(lang => {
             return util.promisify(fs.readFile)(
               path.resolve('data', `${lang}.json`),
               { encoding: 'utf-8' },
             )
           }),
-        )).map(value => JSON.parse(value))
+        ))
+          .map(value => JSON.parse(value))
+          .reduce(
+            (data, value, index) => ({ ...data, ...{ [langs[index]]: value } }),
+            {},
+          )
 
-        res.json(langs.map((lang, index) => ({ [lang]: values[index] })))
+        res.json({ langs, bundle })
       })
 
       app.post('/data', (req, res) => {
         const data = req.body
+
+        const langs = Object.keys(data)
+
         Promise.all(
-          data.map(bundle => {
-            const lang = Object.keys(bundle)[0]
+          langs.map(lang => {
             return util.promisify(fs.writeFile)(
               path.resolve('data', `${lang}.json`),
-              JSON.stringify(bundle[lang], null, '  '),
+              JSON.stringify(data[lang], null, '  '),
             )
           }),
         ).then(res.json(req.body))
