@@ -1,12 +1,12 @@
 {
   "greetings": {
     "general": "Hello",
+    "casual": "Hi",
     "situational": {
       "on_morning": "Good morning",
       "on_afternoon": "Good afternoon",
       "to_sleep": "Good night"
-    },
-    "casual": "Hi"
+    }
   },
   "fruits": {
     "apple": "Apple",
