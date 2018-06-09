@@ -1,3 +1,4 @@
+import * as classnames from 'classnames'
 import * as React from 'react'
 import ReactDataSheet from 'react-datasheet'
 import DataEditor from './DataEditor'
@@ -13,6 +14,13 @@ class DataSheet extends ReactDataSheet<GridElement, DataType> {}
 
 interface Props {
   data: GridElement[][]
+  update(data: Props['data']): void
+}
+
+interface SheetRendererProps {
+  data: Props['data']
+  className: string
+  children: JSX.Element
 }
 
 export default class CustomDataSheet extends React.PureComponent<Props> {
@@ -24,6 +32,7 @@ export default class CustomDataSheet extends React.PureComponent<Props> {
         valueRenderer={this.valueRenderer}
         onCellsChanged={this.handleCellsChange}
         dataEditor={DataEditor}
+        sheetRenderer={this.sheetRenderer}
       />
     )
   }
@@ -34,11 +43,23 @@ export default class CustomDataSheet extends React.PureComponent<Props> {
   private handleCellsChange = (
     changes: ReactDataSheet.CellsChangedArgs<GridElement, DataType>,
   ) => {
-    const { data } = this.props
+    const { data, update } = this.props
     const grid = data.map(row => [...row])
     changes.forEach(({ cell, row, col, value }) => {
       grid[row][col] = { ...grid[row][col], value }
     })
-    this.setState({ grid })
+    update(grid)
   }
+
+  private sheetRenderer = (props: SheetRendererProps) => (
+    <table className={classnames(props.className, 'table', 'is-striped')}>
+      <thead>
+        <tr>
+          <th>Greetings</th>
+          <th>Foo</th>
+        </tr>
+      </thead>
+      <tbody>{props.children}</tbody>
+    </table>
+  )
 }

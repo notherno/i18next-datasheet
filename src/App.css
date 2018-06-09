@@ -1,3 +1,30 @@
 .App {
   text-align: center;
 }
+
+textarea.data-editor {
+  font-size: inherit;
+  font-family: inherit;
+  text-align: left;
+  resize: none;
+  outline: none;
+}
+
+.data-grid-container .data-grid .cell {
+  padding: 0.3em;
+  white-space: pre-wrap;
+  transition: none;
+}
+
+.data-grid-container .data-grid .cell.selected {
+  box-shadow: none;
+  background: rgba(33, 133, 208, 0.15);
+}
+
+.data-grid-container .data-grid .cell.selected.editing {
+  background: #fff;
+}
+
+.data-grid-container .data-grid .cell.selected.editing textarea {
+  border: none;
+}

@@ -1,5 +1,6 @@
 import * as React from 'react'
 import ReactDataSheet from 'react-datasheet'
+import * as keys from './lib/keys'
 
 type Props<T> = ReactDataSheet.DataEditorProps<T, string>
 
@@ -11,18 +12,19 @@ export default class TextDataEditor<T> extends React.PureComponent<Props<T>> {
   }
 
   public componentDidMount() {
+    this.autoSize()
     this._input.focus()
   }
 
   public render() {
-    const { value, onKeyDown } = this.props
+    const { value } = this.props
     return (
       <textarea
         ref={this.handleRef}
         className="data-editor"
         value={value as string}
         onChange={this.handleChange}
-        onKeyDown={onKeyDown}
+        onKeyDown={this.handleKey}
       />
     )
   }
@@ -31,8 +33,29 @@ export default class TextDataEditor<T> extends React.PureComponent<Props<T>> {
     this._input = input
   }
 
-  private handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { value } = e.target as HTMLTextAreaElement
-    this.props.onChange(value)
+  private autoSize = () => {
+    const target = this._input
+    target.style.height = '0px'
+    target.style.height = `${target.scrollHeight}px`
+  }
+
+  private handleChange = () => {
+    const target = this._input
+    this.autoSize()
+    this.props.onChange(target.value)
+  }
+
+  private handleKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const { onKeyDown } = this.props
+
+    const keyCode = e.which || e.keyCode
+
+    if (e.shiftKey && keyCode === keys.ENTER_KEY) {
+      // allow input line breaks with shift+Enter
+      return
+    }
+
+    // call parent's key handler
+    onKeyDown(e)
   }
 }

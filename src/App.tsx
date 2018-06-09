@@ -20,10 +20,14 @@ class App extends React.Component<{}, State> {
 
   public render() {
     return (
-      <div className="App">
-        <DataSheet data={this.state.grid} />
+      <div className="container">
+        <DataSheet data={this.state.grid} update={this.handleUpdate} />
       </div>
     )
+  }
+
+  private handleUpdate = (data: State['grid']) => {
+    this.setState({ grid: data })
   }
 }
 
