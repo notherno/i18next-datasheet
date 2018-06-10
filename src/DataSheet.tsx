@@ -227,13 +227,18 @@ export default class CustomDataSheet extends React.PureComponent<Props> {
   public render() {
     const { data } = this.props
     return (
-      <DataSheet
-        data={data}
-        valueRenderer={this.valueRenderer}
-        onCellsChanged={this.handleCellsChange}
-        dataEditor={DataEditor}
-        sheetRenderer={this.sheetRenderer}
-      />
+      <div className="datasheet-container">
+        <DataSheet
+          data={data}
+          valueRenderer={this.valueRenderer}
+          onCellsChanged={this.handleCellsChange}
+          dataEditor={DataEditor}
+          sheetRenderer={this.sheetRenderer}
+        />
+        <button className="button append" onClick={this.appendRow}>
+          +
+        </button>
+      </div>
     )
   }
   private valueRenderer(cell: GridElement) {
@@ -265,6 +270,16 @@ export default class CustomDataSheet extends React.PureComponent<Props> {
         grid[row][col] = { value }
       })
     }
+
+    update(grid)
+  }
+
+  private appendRow = () => {
+    const { data, update } = this.props
+
+    const grid = data.map(row => [...row])
+
+    grid.push(Array(grid[0].length).fill({ value: '' }))
 
     update(grid)
   }
