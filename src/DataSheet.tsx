@@ -241,13 +241,31 @@ export default class CustomDataSheet extends React.PureComponent<Props> {
   }
 
   private handleCellsChange = (
-    changes: ReactDataSheet.CellsChangedArgs<GridElement, DataType>,
+    changes: CellChanges,
+    additions?: CellAdditions,
   ) => {
     const { data, update } = this.props
     const grid = data.map(row => [...row])
+
     changes.forEach(({ cell, row, col, value }) => {
       grid[row][col] = { ...grid[row][col], value }
     })
+
+    if (additions) {
+      const columnLength = grid[0].length
+      additions.forEach(({ row, col, value }) => {
+        if (col > columnLength - 1) {
+          return
+        }
+
+        while (grid[row] === undefined) {
+          grid.push(Array(columnLength).fill({ value: '' }))
+        }
+
+        grid[row][col] = { value }
+      })
+    }
+
     update(grid)
   }
 

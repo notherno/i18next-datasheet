@@ -25,6 +25,20 @@ interface State {
   langs: string[]
 }
 
+function generateNewKey(keys: string[], candidate: string | undefined): string {
+  const gen = (key: string, i: number) => `${newKey}-${i}`
+
+  let index = 1
+
+  const newKey = candidate === '' || candidate == null ? 'NEW' : candidate
+
+  while (keys.includes(gen(newKey, index))) {
+    index++
+  }
+
+  return gen(newKey, index)
+}
+
 function updateTexts(
   localeModule: LocaleModule,
   targetPath: string[],
@@ -149,13 +163,25 @@ class App extends React.Component<Props, State> {
         updateTexts(
           localeModule,
           modulePath,
-          changed.map(row => {
-            const [key, ...texts] = row
-            return {
-              key: key.value!,
-              text: texts[index].value!,
-            }
-          }),
+          (() => {
+            const texts: LocaleModule['texts'] = []
+            const keys: string[] = []
+
+            changed.forEach(row => {
+              const [keyCell, ...restCells] = row
+              const { value: key } = keyCell
+
+              if (key == null || key === '' || keys.find(k => k === key)) {
+                const newKey = generateNewKey(keys, key!)
+                texts.push({ key: newKey, text: restCells[index].value! })
+                keys.push(newKey)
+              } else {
+                texts.push({ key, text: restCells[index].value! })
+                keys.push(key)
+              }
+            })
+            return texts
+          })(),
         ),
       ),
     })
