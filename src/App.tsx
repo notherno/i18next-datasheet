@@ -4,7 +4,6 @@ import './App.css'
 import DataSheet, { GridElement } from './DataSheet'
 import {
   accessModule,
-  accessText,
   extractBundles,
   LocaleBundle,
   LocaleModule,
@@ -21,7 +20,7 @@ interface Props {
 }
 
 interface State {
-  data: LocaleModule[]
+  data: LocaleModule
   langs: string[]
   pastData: Array<State['data']>
   futureData: Array<State['data']>
@@ -75,10 +74,8 @@ class App extends React.Component<Props, State> {
 
     const langs = initialData.langs
 
-    const bundles = langs.map(lang => initialData.bundle[lang])
-
     this.state = {
-      data: extractBundles(langs, bundles),
+      data: extractBundles(initialData.bundle, langs[0]),
       futureData: [],
       langs,
       pastData: [],
@@ -87,7 +84,7 @@ class App extends React.Component<Props, State> {
 
   public renderModule = (path: string[] = []): JSX.Element => {
     const { data, langs } = this.state
-    const target = accessModule(data[0], path)
+    const targetModule = accessModule(data, path)
 
     return (
       <section className="message">
@@ -99,20 +96,21 @@ class App extends React.Component<Props, State> {
         <div className="message-body">
           {path.length > 0 && (
             <DataSheet
-              data={target.texts.map(text => [
+              data={targetModule.texts.map(text => [
                 { value: text.key },
-                ...data.map(n => {
-                  return {
-                    value: accessText(accessModule(n, path), text.key),
-                  }
-                }),
+                ...this.state.langs.map(lang => ({
+                  value:
+                    lang in text.values && text.values[lang]
+                      ? text.values[lang]
+                      : '',
+                })),
               ])}
               update={this.handleUpdate(path)}
               columns={langs}
-              keys={target.texts.map(text => text.key)}
+              keys={targetModule.texts.map(text => text.key)}
             />
           )}
-          {target.modules.map(m => (
+          {targetModule.modules.map(m => (
             <React.Fragment key={m.key}>
               {this.renderModule([...path, m.key])}
             </React.Fragment>
@@ -144,11 +142,15 @@ class App extends React.Component<Props, State> {
           Redo
         </button>
         <div className="columns">
-          {this.state.data.map(m => (
-            <div key={m.key} className="column">
-              <h2 className="title is-5">{m.key}</h2>
+          {this.state.langs.map(lang => (
+            <div key={lang} className="column">
+              <h2 className="title is-5">{lang}</h2>
               <pre className="json-viewer">
-                {JSON.stringify(serializeModule(m)[m.key], null, '  ')}
+                {JSON.stringify(
+                  serializeModule(lang, this.state.data).root,
+                  null,
+                  '  ',
+                )}
               </pre>
             </div>
           ))}
@@ -160,8 +162,8 @@ class App extends React.Component<Props, State> {
   private save = () => {
     fetch('/data', {
       body: JSON.stringify(
-        this.state.data
-          .map(m => serializeModule(m))
+        this.state.langs
+          .map(lang => serializeModule(lang, this.state.data))
           .reduce((data, bundle) => ({ ...data, ...bundle }), {}),
       ),
       headers: {
@@ -177,30 +179,46 @@ class App extends React.Component<Props, State> {
     const { data, pastData } = this.state
 
     this.setState({
-      data: data.map((localeModule, index) =>
-        updateTexts(
-          localeModule,
-          modulePath,
-          (() => {
-            const texts: LocaleModule['texts'] = []
-            const keys: string[] = []
+      data: updateTexts(
+        this.state.data,
+        modulePath,
+        (() => {
+          const texts: LocaleModule['texts'] = []
+          const keys: string[] = []
 
-            changed.forEach(row => {
-              const [keyCell, ...restCells] = row
-              const { value: key } = keyCell
+          changed.forEach(row => {
+            const [keyCell, ...restCells] = row
+            const { value: key } = keyCell
 
-              if (key == null || key === '' || keys.find(k => k === key)) {
-                const newKey = generateNewKey(keys, key!)
-                texts.push({ key: newKey, text: restCells[index].value! })
-                keys.push(newKey)
-              } else {
-                texts.push({ key, text: restCells[index].value! })
-                keys.push(key)
-              }
-            })
-            return texts
-          })(),
-        ),
+            if (key == null || key === '' || keys.find(k => k === key)) {
+              const newKey = generateNewKey(keys, key!)
+              texts.push({
+                key: newKey,
+                values: restCells.reduce<{ [lang: string]: string }>(
+                  (val, cell, index) => ({
+                    ...val,
+                    ...{ [this.state.langs[index]]: cell.value! },
+                  }),
+                  {},
+                ),
+              })
+              keys.push(newKey)
+            } else {
+              texts.push({
+                key,
+                values: restCells.reduce<{ [lang: string]: string }>(
+                  (val, cell, index) => ({
+                    ...val,
+                    ...{ [this.state.langs[index]]: cell.value! },
+                  }),
+                  {},
+                ),
+              })
+              keys.push(key)
+            }
+          })
+          return texts
+        })(),
       ),
       futureData: [],
       pastData: [data, ...pastData],

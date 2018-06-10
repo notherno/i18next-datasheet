@@ -10,18 +10,7 @@ export interface LocaleModule {
 
 interface LocaleText {
   key: string
-  text: string
-}
-
-export function accessText(
-  localeModule: LocaleModule | undefined,
-  key: string,
-) {
-  if (localeModule == null) {
-    return ''
-  }
-  const text = localeModule.texts.find(t => t.key === key)
-  return text ? text.text : ''
+  values: { [lang: string]: string }
 }
 
 export function accessModule(localeModule: LocaleModule, path: string[]) {
@@ -36,29 +25,39 @@ export function accessModule(localeModule: LocaleModule, path: string[]) {
   return data
 }
 
+function accessBundles(
+  bundles: { [lang: string]: LocaleBundle | string },
+  key: string,
+) {
+  const langs = Object.keys(bundles)
+  return langs.reduce<{ [lang: string]: LocaleBundle | string }>(
+    (val, lang) =>
+      lang in bundles && bundles[lang]
+        ? { ...val, [lang]: bundles[lang][key] }
+        : val,
+    {},
+  )
+}
+
 function extractBundle(
   rootKey: string,
-  bundle: LocaleBundle,
-  refBundle?: LocaleBundle,
-) {
-  const targetBundle = refBundle ? refBundle : bundle
-
-  const keys = Object.keys(targetBundle)
+  bundles: { [lang: string]: LocaleBundle },
+  refBundle: LocaleBundle,
+): LocaleModule {
+  const keys = Object.keys(refBundle)
   const data: LocaleModule = { key: rootKey, modules: [], texts: [] }
 
   keys.forEach(key => {
-    const refValue = targetBundle[key]
-    const value = key in bundle ? bundle[key] : null
+    const refValue = refBundle[key]
     if (typeof refValue === 'string') {
-      if (value != null && typeof value === 'string') {
-        data.texts.push({ key, text: value })
-      }
+      const values = accessBundles(bundles, key) as { [lang: string]: string }
+      data.texts.push({ key, values })
     } else {
-      if (value == null || typeof value === 'string') {
-        data.modules.push(extractBundle(key, { [key]: {} }, refValue))
-      } else {
-        data.modules.push(extractBundle(key, value, refValue))
+      const values = accessBundles(bundles, key) as {
+        [lang: string]: LocaleBundle
       }
+
+      data.modules.push(extractBundle(key, values, refValue))
     }
   })
 
@@ -66,24 +65,30 @@ function extractBundle(
 }
 
 export function extractBundles(
-  langs: string[],
-  bundles: LocaleBundle[],
-): LocaleModule[] {
-  return bundles.map((bundle, index) =>
-    extractBundle(langs[index], bundle, bundles[0]),
-  )
+  bundles: { [lang: string]: LocaleBundle },
+  refLang: string,
+): LocaleModule {
+  if (!(refLang in bundles)) {
+    throw new Error(`"${refLang}" should be a key for bundles`)
+  }
+  return extractBundle('root', bundles, bundles[refLang])
 }
 
-export function serializeModule(localeModule: LocaleModule): LocaleBundle {
+export function serializeModule(
+  lang: string,
+  localeModule: LocaleModule,
+): LocaleBundle {
   return {
     [localeModule.key]: {
       ...localeModule.texts.reduce(
-        (bundle, { key, text }) =>
-          text !== '' ? { ...bundle, [key]: text } : bundle,
+        (bundle, { key, values }) =>
+          lang in values && values[lang] !== ''
+            ? { ...bundle, [key]: values[lang] }
+            : bundle,
         {},
       ),
       ...localeModule.modules.reduce(
-        (bundle, m) => ({ ...bundle, ...serializeModule(m) }),
+        (bundle, m) => ({ ...bundle, ...serializeModule(lang, m) }),
         {},
       ),
     },
