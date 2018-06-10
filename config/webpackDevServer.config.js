@@ -125,7 +125,7 @@ module.exports = function(proxy, allowedHost) {
           langs.map(lang => {
             return util.promisify(fs.writeFile)(
               path.resolve('data', `${lang}.json`),
-              JSON.stringify(data[lang], null, '  '),
+              `${JSON.stringify(data[lang], null, '  ')}\n`,
             )
           }),
         ).then(res.json(req.body))
