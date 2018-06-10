@@ -23,6 +23,8 @@ interface Props {
 interface State {
   data: LocaleModule[]
   langs: string[]
+  pastData: Array<State['data']>
+  futureData: Array<State['data']>
 }
 
 function generateNewKey(keys: string[], candidate: string | undefined): string {
@@ -77,7 +79,9 @@ class App extends React.Component<Props, State> {
 
     this.state = {
       data: extractBundles(langs, bundles),
+      futureData: [],
       langs,
+      pastData: [],
     }
   }
 
@@ -125,6 +129,20 @@ class App extends React.Component<Props, State> {
         <button className="button" onClick={this.save}>
           Save
         </button>
+        <button
+          className="button"
+          onClick={this.undo}
+          disabled={this.state.pastData.length === 0}
+        >
+          Undo
+        </button>
+        <button
+          className="button"
+          onClick={this.redo}
+          disabled={this.state.futureData.length === 0}
+        >
+          Redo
+        </button>
         <div className="columns">
           {this.state.data.map(m => (
             <div key={m.key} className="column">
@@ -156,7 +174,7 @@ class App extends React.Component<Props, State> {
   private handleUpdate = (modulePath: string[]) => (
     changed: GridElement[][],
   ) => {
-    const { data } = this.state
+    const { data, pastData } = this.state
 
     this.setState({
       data: data.map((localeModule, index) =>
@@ -184,6 +202,40 @@ class App extends React.Component<Props, State> {
           })(),
         ),
       ),
+      futureData: [],
+      pastData: [data, ...pastData],
+    })
+  }
+
+  private undo = () => {
+    const { data, futureData, pastData } = this.state
+
+    if (pastData.length === 0) {
+      return
+    }
+
+    const [nextData, ...restData] = pastData
+
+    this.setState({
+      data: nextData,
+      futureData: [data, ...futureData],
+      pastData: restData,
+    })
+  }
+
+  private redo = () => {
+    const { data, futureData, pastData } = this.state
+
+    if (futureData.length === 0) {
+      return
+    }
+
+    const [nextData, ...restData] = futureData
+
+    this.setState({
+      data: nextData,
+      futureData: restData,
+      pastData: [data, ...pastData],
     })
   }
 }
