@@ -82,6 +82,14 @@ class App extends React.Component<Props, State> {
     }
   }
 
+  public componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyDown)
+  }
+
+  public componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown)
+  }
+
   public renderModule = (path: string[] = []): JSX.Element => {
     const { data, langs } = this.state
     const targetModule = accessModule(data, path)
@@ -157,6 +165,26 @@ class App extends React.Component<Props, State> {
         </div>
       </div>
     )
+  }
+
+  private handleKeyDown = (ev: KeyboardEvent) => {
+    if (ev.metaKey && ev.key === 's') {
+      ev.preventDefault()
+      this.save()
+      return
+    }
+
+    if (ev.metaKey && ev.key === 'z') {
+      ev.preventDefault()
+      this.undo()
+      return
+    }
+
+    if (ev.metaKey && ev.key === 'y') {
+      ev.preventDefault()
+      this.redo()
+      return
+    }
   }
 
   private save = () => {
