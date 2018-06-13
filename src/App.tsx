@@ -2,13 +2,8 @@ import * as React from 'react'
 import 'react-datasheet/lib/react-datasheet.css'
 import './App.css'
 import DataSheet, { GridElement } from './DataSheet'
-import {
-  accessModule,
-  extractBundles,
-  LocaleBundle,
-  LocaleModule,
-  serializeModule,
-} from './lib/dataLoader'
+import { accessModule, extractBundles, serializeModule } from './lib/dataLoader'
+import { LocaleBundle, LocaleModule } from './types'
 
 export interface BundleResponse {
   langs: string[]

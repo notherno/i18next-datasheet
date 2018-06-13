@@ -1,17 +1,4 @@
-export interface LocaleBundle {
-  [key: string]: LocaleBundle | string
-}
-
-export interface LocaleModule {
-  key: string
-  modules: LocaleModule[]
-  texts: LocaleText[]
-}
-
-interface LocaleText {
-  key: string
-  values: { [lang: string]: string }
-}
+import { LocaleBundle, LocaleModule } from '../types'
 
 export function accessModule(localeModule: LocaleModule, path: string[]) {
   let data: LocaleModule = localeModule
