@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions'
 import { storiesOf } from '@storybook/react'
 import 'bulma/css/bulma.css'
 import React from 'react'
-import App from '../src/App'
+import App from '../src/components/App'
 
 const bundle = {
   en: {

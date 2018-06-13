@@ -1,6 +1,6 @@
 import * as React from 'react'
 import ReactDataSheet from 'react-datasheet'
-import * as keys from './lib/keys'
+import * as keys from '../lib/keys'
 
 type Props<T> = ReactDataSheet.DataEditorProps<T, string>
 

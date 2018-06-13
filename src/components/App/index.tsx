@@ -1,9 +1,13 @@
 import * as React from 'react'
 import 'react-datasheet/lib/react-datasheet.css'
-import './App.css'
-import DataSheet, { GridElement } from './DataSheet'
-import { accessModule, extractBundles, serializeModule } from './lib/dataLoader'
-import { I18nBundle, LocaleBundle, LocaleModule } from './types'
+import {
+  accessModule,
+  extractBundles,
+  serializeModule,
+} from '../../lib/dataLoader'
+import { I18nBundle, LocaleBundle, LocaleModule } from '../../types'
+import DataSheet, { GridElement } from '../DataSheet'
+import './styles.css'
 
 interface Props {
   initialBundle: I18nBundle
