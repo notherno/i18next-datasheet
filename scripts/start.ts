@@ -13,16 +13,16 @@ process.on('unhandledRejection', err => {
 import '../config/env'
 
 import chalk from 'chalk'
-import fs = require('fs')
-import checkRequiredFiles = require('react-dev-utils/checkRequiredFiles')
-import clearConsole = require('react-dev-utils/clearConsole')
-import openBrowser = require('react-dev-utils/openBrowser')
-import devServerUtils = require('react-dev-utils/WebpackDevServerUtils')
-import webpack = require('webpack')
-import WebpackDevServer = require('webpack-dev-server')
-import paths = require('../config/paths')
-import config = require('../config/webpack.config.dev')
-import createDevServerConfig = require('../config/webpackDevServer.config')
+import fs from 'fs'
+import checkRequiredFiles from 'react-dev-utils/checkRequiredFiles'
+import clearConsole from 'react-dev-utils/clearConsole'
+import openBrowser from 'react-dev-utils/openBrowser'
+import devServerUtils from 'react-dev-utils/WebpackDevServerUtils'
+import webpack from 'webpack'
+import WebpackDevServer from 'webpack-dev-server'
+import * as paths from '../config/paths'
+import config from '../config/webpack.config.dev'
+import createDevServerConfig from '../config/webpackDevServer.config'
 
 const { choosePort, createCompiler, prepareProxy, prepareUrls } = devServerUtils
 
