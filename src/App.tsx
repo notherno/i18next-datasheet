@@ -17,6 +17,7 @@ export interface BundleResponse {
 
 interface Props {
   initialData: BundleResponse
+  save(data: { [lang: string]: LocaleBundle }): void
 }
 
 interface State {
@@ -188,22 +189,18 @@ class App extends React.Component<Props, State> {
   }
 
   private save = () => {
-    fetch('/data', {
-      body: JSON.stringify(
-        this.state.langs
-          .map(lang => ({
-            [lang]: serializeModule(lang, this.state.data).root as LocaleBundle,
-          }))
-          .reduce<{ [lang: string]: LocaleBundle }>(
-            (data, bundle) => ({ ...data, ...bundle }),
-            {},
-          ),
-      ),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    }).then(() => alert('saved'))
+    const { save } = this.props
+
+    save(
+      this.state.langs
+        .map(lang => ({
+          [lang]: serializeModule(lang, this.state.data).root as LocaleBundle,
+        }))
+        .reduce<{ [lang: string]: LocaleBundle }>(
+          (data, bundle) => ({ ...data, ...bundle }),
+          {},
+        ),
+    )
   }
 
   private handleUpdate = (modulePath: string[]) => (
