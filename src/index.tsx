@@ -1,32 +1,21 @@
 import 'bulma/css/bulma.css'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import App, { BundleResponse } from './App'
+import App from './App'
 import './index.css'
+import { loadData, saveData } from './lib/requests'
 import registerServiceWorker from './registerServiceWorker'
-import { LocaleBundle } from './types'
 
-const save = (data: { [lang: string]: LocaleBundle }) => {
-  fetch('/data', {
-    body: JSON.stringify(data),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-  }).then(() => alert('saved'))
-}
-
+/** A promise which resolves at a time when DOM is ready */
 const ready = new Promise(resolve => {
   document.addEventListener('DOMContentLoaded', () => resolve())
 })
 
-const loadData = new Promise<BundleResponse>(resolve =>
-  fetch('/data').then(res => res.json().then(data => resolve(data))),
-)
-
 Promise.all([loadData, ready]).then(([data]) => {
+  const { bundle, langs } = data
+
   ReactDOM.render(
-    <App initialData={data} save={save} />,
+    <App initialBundle={bundle} initialLangs={langs} save={saveData} />,
     document.getElementById('root') as HTMLElement,
   )
   registerServiceWorker()

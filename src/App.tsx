@@ -5,13 +5,9 @@ import DataSheet, { GridElement } from './DataSheet'
 import { accessModule, extractBundles, serializeModule } from './lib/dataLoader'
 import { I18nBundle, LocaleBundle, LocaleModule } from './types'
 
-export interface BundleResponse {
-  langs: string[]
-  bundle: { [lang: string]: LocaleBundle }
-}
-
 interface Props {
-  initialData: BundleResponse
+  initialBundle: I18nBundle
+  initialLangs: string[]
   save(data: I18nBundle): void
 }
 
@@ -66,14 +62,12 @@ class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const { initialData } = props
-
-    const langs = initialData.langs
+    const { initialBundle, initialLangs } = props
 
     this.state = {
-      data: extractBundles(initialData.bundle, langs[0]),
+      data: extractBundles(initialBundle, initialLangs[0]),
       futureData: [],
-      langs,
+      langs: initialLangs,
       pastData: [],
     }
   }

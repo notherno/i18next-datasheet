@@ -46,6 +46,10 @@ function extractBundle(
   return data
 }
 
+/**
+ * Load bundle data and converts it to internal module type
+ * @todo Load data from all languages and merge data
+ */
 export function extractBundles(
   bundles: I18nBundle,
   refLang: string,

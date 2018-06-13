@@ -4,19 +4,18 @@ import 'bulma/css/bulma.css'
 import React from 'react'
 import App from '../src/App'
 
-const data = {
-  bundle: {
-    en: {
-      greetings: {
-        hello: 'Hello',
-      },
+const bundle = {
+  en: {
+    greetings: {
+      hello: 'Hello',
     },
   },
-  langs: ['en'],
 }
+
+const langs = ['en']
 
 const stories = storiesOf('App', module)
 
 stories.add('can be mounted', () => (
-  <App initialData={data} save={action('save')} />
+  <App initialBundle={bundle} initialLangs={langs} save={action('save')} />
 ))

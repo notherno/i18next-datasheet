@@ -2,16 +2,14 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import App from './App'
 
-const data = {
-  bundle: {
-    en: {
-      greetings: {
-        hello: 'Hello',
-      },
+const bundle = {
+  en: {
+    greetings: {
+      hello: 'Hello',
     },
   },
-  langs: ['en'],
 }
+const langs = ['en']
 
 /** A mock for save method */
 const save = (payload: any) => {
@@ -20,6 +18,9 @@ const save = (payload: any) => {
 
 it('renders without crashing', () => {
   const div = document.createElement('div')
-  ReactDOM.render(<App initialData={data} save={save} />, div)
+  ReactDOM.render(
+    <App initialBundle={bundle} initialLangs={langs} save={save} />,
+    div,
+  )
   ReactDOM.unmountComponentAtNode(div)
 })

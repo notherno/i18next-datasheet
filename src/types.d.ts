@@ -3,9 +3,15 @@ export interface LocaleBundle {
   [key: string]: LocaleBundle | string
 }
 
-/** A structure for bundles that the server provides */
+/** A structure for bundles whic key is language or that identifier */
 export interface I18nBundle {
   [lang: string]: LocaleBundle
+}
+
+/** The data structure that the server provides */
+export interface BundleResponse {
+  langs: string[]
+  bundle: I18nBundle
 }
 
 export interface I18nText {
