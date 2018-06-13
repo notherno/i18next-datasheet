@@ -3,8 +3,8 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import App, { BundleResponse } from './App'
 import './index.css'
-import { LocaleBundle } from './lib/dataLoader'
 import registerServiceWorker from './registerServiceWorker'
+import { LocaleBundle } from './types'
 
 const save = (data: { [lang: string]: LocaleBundle }) => {
   fetch('/data', {
