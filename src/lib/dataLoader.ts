@@ -1,4 +1,4 @@
-import { LocaleBundle, LocaleModule } from '../types'
+import { I18nBundle, I18nText, LocaleBundle, LocaleModule } from '../types'
 
 export function accessModule(localeModule: LocaleModule, path: string[]) {
   let data: LocaleModule = localeModule
@@ -12,12 +12,9 @@ export function accessModule(localeModule: LocaleModule, path: string[]) {
   return data
 }
 
-function accessBundles(
-  bundles: { [lang: string]: LocaleBundle | string },
-  key: string,
-) {
+function accessBundles(bundles: I18nBundle | I18nText, key: string) {
   const langs = Object.keys(bundles)
-  return langs.reduce<{ [lang: string]: LocaleBundle | string }>(
+  return langs.reduce<I18nBundle | I18nText>(
     (val, lang) =>
       lang in bundles && bundles[lang]
         ? { ...val, [lang]: bundles[lang][key] }
@@ -28,7 +25,7 @@ function accessBundles(
 
 function extractBundle(
   rootKey: string,
-  bundles: { [lang: string]: LocaleBundle },
+  bundles: I18nBundle,
   refBundle: LocaleBundle,
 ): LocaleModule {
   const keys = Object.keys(refBundle)
@@ -37,12 +34,10 @@ function extractBundle(
   keys.forEach(key => {
     const refValue = refBundle[key]
     if (typeof refValue === 'string') {
-      const values = accessBundles(bundles, key) as { [lang: string]: string }
+      const values = accessBundles(bundles, key) as I18nText
       data.texts.push({ key, values })
     } else {
-      const values = accessBundles(bundles, key) as {
-        [lang: string]: LocaleBundle
-      }
+      const values = accessBundles(bundles, key) as I18nBundle
 
       data.modules.push(extractBundle(key, values, refValue))
     }
@@ -52,7 +47,7 @@ function extractBundle(
 }
 
 export function extractBundles(
-  bundles: { [lang: string]: LocaleBundle },
+  bundles: I18nBundle,
   refLang: string,
 ): LocaleModule {
   if (!(refLang in bundles)) {

@@ -3,7 +3,7 @@ import 'react-datasheet/lib/react-datasheet.css'
 import './App.css'
 import DataSheet, { GridElement } from './DataSheet'
 import { accessModule, extractBundles, serializeModule } from './lib/dataLoader'
-import { LocaleBundle, LocaleModule } from './types'
+import { I18nBundle, LocaleBundle, LocaleModule } from './types'
 
 export interface BundleResponse {
   langs: string[]
@@ -12,7 +12,7 @@ export interface BundleResponse {
 
 interface Props {
   initialData: BundleResponse
-  save(data: { [lang: string]: LocaleBundle }): void
+  save(data: I18nBundle): void
 }
 
 interface State {
@@ -191,10 +191,7 @@ class App extends React.Component<Props, State> {
         .map(lang => ({
           [lang]: serializeModule(lang, this.state.data).root as LocaleBundle,
         }))
-        .reduce<{ [lang: string]: LocaleBundle }>(
-          (data, bundle) => ({ ...data, ...bundle }),
-          {},
-        ),
+        .reduce<I18nBundle>((data, bundle) => ({ ...data, ...bundle }), {}),
     )
   }
 
@@ -283,4 +280,4 @@ class App extends React.Component<Props, State> {
   }
 }
 
-export default App
+export { App as default }
