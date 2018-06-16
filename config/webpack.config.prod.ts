@@ -1,37 +1,49 @@
-'use strict'
+import autoprefixer from 'autoprefixer'
+import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import path from 'path'
+import postCssFlexBugsFixes from 'postcss-flexbugs-fixes'
+import InterpolateHtmlPlugin from 'react-dev-utils/InterpolateHtmlPlugin'
+import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin'
+import SWPrecacheWebpackPlugin from 'sw-precache-webpack-plugin'
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
+import UglifyJsPlugin from 'uglifyjs-webpack-plugin'
+import webpack from 'webpack'
+import ManifestPlugin from 'webpack-manifest-plugin'
+import getClientEnvironment from './env'
+import * as paths from './paths'
 
-const autoprefixer = require('autoprefixer')
-const path = require('path')
-const webpack = require('webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const ManifestPlugin = require('webpack-manifest-plugin')
-const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin')
-const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
-const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin')
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
-const paths = require('./paths')
-const getClientEnvironment = require('./env')
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-
-// Webpack uses `publicPath` to determine where the app is being served from.
-// It requires a trailing slash, or the file assets will get an incorrect path.
+/**
+ * Webpack uses `publicPath` to determine where the app is being served from.
+ * It requires a trailing slash, or the file assets will get an incorrect path.
+ */
 const publicPath = paths.servedPath
-// Some apps do not use client-side routing with pushState.
-// For these, "homepage" can be set to "." to enable relative asset paths.
+
+/**
+ * Some apps do not use client-side routing with pushState.
+ * For these, "homepage" can be set to "." to enable relative asset paths.
+ */
 const shouldUseRelativeAssetPaths = publicPath === './'
-// Source maps are resource heavy and can cause out of memory issue for large source files.
+
+/**
+ * Source maps are resource heavy and can cause out of memory issue for large source files.
+ */
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false'
-// `publicUrl` is just like `publicPath`, but we will provide it to our app
-// as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
-// Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
+
+/**
+ * `publicUrl` is just like `publicPath`, but we will provide it to our app
+ * as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
+ * Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
+ */
 const publicUrl = publicPath.slice(0, -1)
-// Get environment variables to inject into our app.
+
+/** Get environment variables to inject into our app. */
 const env = getClientEnvironment(publicUrl)
 
 // Assert this just to be safe.
 // Development builds of React are slow and not intended for production.
+// @ts-ignore
 if (env.stringified['process.env'].NODE_ENV !== '"production"') {
   throw new Error('Production builds must have NODE_ENV=production.')
 }
@@ -51,7 +63,7 @@ const extractTextPluginOptions = shouldUseRelativeAssetPaths
 // This is the production configuration.
 // It compiles slowly and is focused on producing a fast and minimal bundle.
 // The development configuration is different and lives in a separate file.
-module.exports = {
+const config: webpack.Configuration = {
   // Don't attempt to continue if there are any errors.
   bail: true,
   // We generate sourcemaps in production. This is slow but gives good results.
@@ -68,9 +80,9 @@ module.exports = {
     filename: 'static/js/[name].[chunkhash:8].js',
     chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js',
     // We inferred the "public path" (such as / or /my-project) from homepage.
-    publicPath: publicPath,
+    publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info =>
+    devtoolModuleFilenameTemplate: (info: any) =>
       path
         .relative(paths.appSrc, info.absoluteResourcePath)
         .replace(/\\/g, '/'),
@@ -82,7 +94,7 @@ module.exports = {
     // https://github.com/facebookincubator/create-react-app/issues/253
     modules: ['node_modules', paths.appNodeModules].concat(
       // It is guaranteed to exist because we tweak it in `env.js`
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean),
+      process.env.NODE_PATH!.split(path.delimiter).filter(Boolean),
     ),
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
@@ -205,8 +217,8 @@ module.exports = {
                         // Necessary for external CSS imports to work
                         // https://github.com/facebookincubator/create-react-app/issues/2677
                         ident: 'postcss',
-                        plugins: () => [
-                          require('postcss-flexbugs-fixes'),
+                        plugins: (): webpack.Plugin[] => [
+                          postCssFlexBugsFixes,
                           autoprefixer({
                             browsers: [
                               '>1%',
@@ -331,7 +343,7 @@ module.exports = {
       // about it being stale, and the cache-busting can be skipped.
       dontCacheBustUrlsMatching: /\.\w{8}\./,
       filename: 'service-worker.js',
-      logger(message) {
+      logger(message: string) {
         if (message.indexOf('Total precache size is') === 0) {
           // This message occurs for every build and is a bit too noisy.
           return
@@ -375,3 +387,5 @@ module.exports = {
     child_process: 'empty',
   },
 }
+
+export { config as default }

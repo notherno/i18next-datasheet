@@ -13,16 +13,16 @@ process.on('unhandledRejection', err => {
 import '../config/env'
 
 import chalk from 'chalk'
-import fs = require('fs-extra')
-import path = require('path')
-import checkRequiredFiles = require('react-dev-utils/checkRequiredFiles')
-import FileSizeReporter = require('react-dev-utils/FileSizeReporter')
-import formatWebpackMessages = require('react-dev-utils/formatWebpackMessages')
-import printBuildError = require('react-dev-utils/printBuildError')
-import printHostingInstructions = require('react-dev-utils/printHostingInstructions')
-import webpack = require('webpack')
-import paths = require('../config/paths')
-import config = require('../config/webpack.config.prod')
+import fs from 'fs-extra'
+import path from 'path'
+import checkRequiredFiles from 'react-dev-utils/checkRequiredFiles'
+import FileSizeReporter from 'react-dev-utils/FileSizeReporter'
+import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages'
+import printBuildError from 'react-dev-utils/printBuildError'
+import printHostingInstructions from 'react-dev-utils/printHostingInstructions'
+import webpack from 'webpack'
+import * as paths from '../config/paths'
+import config from '../config/webpack.config.prod'
 
 const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild
 const printFileSizesAfterBuild = FileSizeReporter.printFileSizesAfterBuild
@@ -80,7 +80,7 @@ measureFileSizesBeforeBuild(paths.appBuild)
 
       const appPackage = require(paths.appPackageJson)
       const publicUrl = paths.publicUrl
-      const publicPath = config.output.publicPath
+      const publicPath = config.output!.publicPath
       const buildFolder = path.relative(process.cwd(), paths.appBuild)
       printHostingInstructions(
         appPackage,
