@@ -88,10 +88,12 @@ export default function(proxy: any, allowedHost: any): Configuration {
     quiet: true,
     /** By default files from `contentBase` will not trigger a page reload. */
     watchContentBase: true,
-    // Reportedly, this avoids CPU overload on some systems.
-    // https://github.com/facebookincubator/create-react-app/issues/293
-    // src/node_modules is not ignored to support absolute imports
-    // https://github.com/facebookincubator/create-react-app/issues/1065
+    /**
+     * Reportedly, this avoids CPU overload on some systems.
+     * https://github.com/facebookincubator/create-react-app/issues/293
+     * src/node_modules is not ignored to support absolute imports
+     * https://github.com/facebookincubator/create-react-app/issues/1065
+     */
     watchOptions: {
       ignored: ignoredFiles(paths.appSrc),
     },
