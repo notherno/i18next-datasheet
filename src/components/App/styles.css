@@ -40,10 +40,22 @@ pre.json-viewer {
   width: 100%;
 }
 
+@media screen and (min-width: 1472px) {
+  .container {
+    max-width: 98vw;
+    width: 98vw;
+  }
+}
+
 .data-grid-container .data-grid .cell {
   padding: 0.3em;
   white-space: pre-wrap;
   transition: none;
+  vertical-align: top;
+  font-size: 14px;
+  text-align: left;
+  word-wrap: break-word;
+  font-family: Menlo, Monaco, 'Ricty Discord', Consolas, monospace;
 }
 
 .data-grid-container .data-grid .cell.selected {
@@ -57,4 +69,8 @@ pre.json-viewer {
 
 .data-grid-container .data-grid .cell.selected.editing textarea {
   border: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  width: 100%;
 }
