@@ -20,10 +20,6 @@ textarea.data-editor {
   outline: none;
 }
 
-pre.json-viewer {
-  font-family: monospace;
-}
-
 .datasheet-container {
   display: flex;
   flex-direction: column;
