@@ -1,4 +1,10 @@
-import { I18nBundle, I18nText, LocaleBundle, LocaleModule } from '../types'
+import {
+  FlattenedModule,
+  I18nBundle,
+  I18nText,
+  LocaleBundle,
+  LocaleModule,
+} from '../types'
 
 export function accessModule(localeModule: LocaleModule, path: string[]) {
   let data: LocaleModule = localeModule
@@ -21,6 +27,15 @@ function accessBundles(bundles: I18nBundle | I18nText, key: string) {
         : val,
     {},
   )
+}
+
+/**
+ * Builds key for i18next
+ * @todo Use of custom separator symbols
+ */
+function buildFullKey(pathStack: string[]) {
+  const [ns, ...path] = pathStack
+  return `${ns}:${path.join('.')}`
 }
 
 function extractBundle(
@@ -79,4 +94,63 @@ export function serializeModule(
       ),
     },
   }
+}
+
+/**
+ * Converts bundles which has language (column) keys into flat 2D array
+ */
+export function flattenBundles(bundles: I18nBundle) {
+  const columns = Object.keys(bundles)
+
+  let flattened: FlattenedModule = []
+
+  columns.forEach(column => {
+    /** Update `flattened` */
+    function register(pathStack: string[], text: string) {
+      const fullKey = buildFullKey(pathStack)
+
+      let isFound = false
+
+      flattened = flattened.map(candidate => {
+        if (candidate.key === fullKey) {
+          isFound = true
+          return { key: fullKey, texts: { ...candidate.texts, [column]: text } }
+        }
+        return candidate
+      })
+
+      if (!isFound) {
+        flattened.push({ key: fullKey, texts: { [column]: text } })
+      }
+    }
+
+    /** Dig into the bundle object and call `register` if it hits string */
+    function access(obj: LocaleBundle | string, pathStack: string[]) {
+      if (typeof obj === 'string') {
+        register(pathStack, obj)
+        return
+      }
+
+      Object.keys(obj).forEach(key => {
+        if (obj[key] == null) {
+          return
+        }
+
+        access(obj[key], [...pathStack, key])
+      })
+    }
+
+    // Recursively access all keys
+    Object.entries(bundles[column]).map(([ns, val]) => {
+      if (typeof val === 'string') {
+        // Must be an object
+        throw new Error('Invalid type of bundle')
+      }
+
+      // Dig into val with its key
+      access(val, [ns])
+    })
+  })
+
+  return flattened
 }

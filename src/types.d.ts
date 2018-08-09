@@ -29,3 +29,8 @@ interface LocaleText {
   key: string
   values: { [lang: string]: string }
 }
+
+export type FlattenedModule = Array<{
+  key: string
+  texts: { [lang: string]: string }
+}>

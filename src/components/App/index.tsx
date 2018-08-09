@@ -3,8 +3,10 @@ import 'react-datasheet/lib/react-datasheet.css'
 import {
   accessModule,
   extractBundles,
+  flattenBundles,
   serializeModule,
 } from '../../lib/dataLoader'
+import { toYAML } from '../../lib/formatter'
 import { I18nBundle, LocaleBundle, LocaleModule } from '../../types'
 import DataSheet, { GridElement } from '../DataSheet'
 import './styles.css'
@@ -143,6 +145,9 @@ class App extends React.Component<Props, State> {
         >
           Redo
         </button>
+        <button className="button" onClick={this.exportData}>
+          Export
+        </button>
         <div className="columns">
           {this.state.langs.map(lang => (
             <div key={lang} className="column">
@@ -179,18 +184,49 @@ class App extends React.Component<Props, State> {
       this.redo()
       return
     }
+
+    if (ev.metaKey && ev.key === 'e') {
+      ev.preventDefault()
+      this.exportData()
+      return
+    }
   }
+
+  /**
+   * Exports the whole data as YAML
+   */
+  private exportData = () => {
+    const data = flattenBundles(this.getBundle())
+
+    const anchor = document.createElement('a')
+
+    anchor.href = window.URL.createObjectURL(
+      new Blob([toYAML(data)], { type: 'text/vnd.yaml' }),
+    )
+
+    // TODO: Make it customizable
+    anchor.download = 'export.yaml'
+
+    document.body.appendChild(anchor)
+
+    // Open download window
+    anchor.click()
+
+    // Remove temporary anchor
+    document.body.removeChild(anchor)
+  }
+
+  private getBundle = () =>
+    this.state.langs
+      .map(lang => ({
+        [lang]: serializeModule(lang, this.state.data).root as LocaleBundle,
+      }))
+      .reduce<I18nBundle>((data, bundle) => ({ ...data, ...bundle }), {})
 
   private save = () => {
     const { save } = this.props
 
-    save(
-      this.state.langs
-        .map(lang => ({
-          [lang]: serializeModule(lang, this.state.data).root as LocaleBundle,
-        }))
-        .reduce<I18nBundle>((data, bundle) => ({ ...data, ...bundle }), {}),
-    )
+    save(this.getBundle())
   }
 
   private handleUpdate = (modulePath: string[]) => (

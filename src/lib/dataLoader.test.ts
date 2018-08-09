@@ -1,45 +1,107 @@
-import { extractBundles } from './dataLoader'
+import { I18nBundle } from '../types'
+import { extractBundles, flattenBundles } from './dataLoader'
 
-const bundle = {
+const bundle: I18nBundle = {
   en: {
     greetings: {
-      hello: 'hi',
+      formal: {
+        hello: 'Hello',
+      },
+      casual: {
+        hello: 'Hi',
+        thanks: 'Thanks',
+      },
     },
   },
   ja: {
     greetings: {
-      hello: 'やあ',
+      formal: {
+        hello: 'こんにちは',
+      },
+      casual: {
+        hello: 'やあ',
+        thanks: 'ありがとう',
+      },
     },
   },
 }
 
-describe('extractBundle', () => {
+function formatJSON(data: any) {
+  return JSON.stringify(data, null, '  ')
+}
+
+describe('extractBundles', () => {
   it('loads resource bundles', () => {
-    const module = extractBundles(bundle, 'en')
+    const actual = extractBundles(bundle, 'en')
 
     const expected = {
       key: 'root',
       modules: [
         {
           key: 'greetings',
-          modules: [],
-          texts: [
+          modules: [
             {
-              key: 'hello',
-              values: {
-                en: 'hi',
-                ja: 'やあ',
-              },
+              key: 'formal',
+              modules: [],
+              texts: [
+                {
+                  key: 'hello',
+                  values: {
+                    en: 'Hello',
+                    ja: 'こんにちは',
+                  },
+                },
+              ],
+            },
+            {
+              key: 'casual',
+              modules: [],
+              texts: [
+                {
+                  key: 'hello',
+                  values: {
+                    en: 'Hi',
+                    ja: 'やあ',
+                  },
+                },
+                {
+                  key: 'thanks',
+                  values: {
+                    en: 'Thanks',
+                    ja: 'ありがとう',
+                  },
+                },
+              ],
             },
           ],
+          texts: [],
         },
       ],
       texts: [],
     }
 
-    expect(module.key).toBe('root')
-    expect(JSON.stringify(module, null, '  ')).toBe(
-      JSON.stringify(expected, null, '  '),
-    )
+    expect(actual.key).toBe('root')
+
+    expect(formatJSON(actual)).toBe(formatJSON(expected))
+  })
+})
+
+describe('flattenBundles', () => {
+  it('loads resource bundles', () => {
+    const actual = flattenBundles(bundle)
+
+    const expected = [
+      {
+        key: 'greetings:formal.hello',
+        texts: { en: 'Hello', ja: 'こんにちは' },
+      },
+      { key: 'greetings:casual.hello', texts: { en: 'Hi', ja: 'やあ' } },
+      {
+        key: 'greetings:casual.thanks',
+        texts: { en: 'Thanks', ja: 'ありがとう' },
+      },
+    ]
+
+    expect(formatJSON(actual)).toBe(formatJSON(expected))
   })
 })
