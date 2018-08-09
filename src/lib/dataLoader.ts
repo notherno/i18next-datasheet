@@ -23,6 +23,15 @@ function accessBundles(bundles: I18nBundle | I18nText, key: string) {
   )
 }
 
+/**
+ * Builds key for i18next
+ * @todo Use of custom separator symbols
+ */
+function buildFullKey(pathStack: string[]) {
+  const [ns, ...path] = pathStack
+  return `${ns}:${path.join('.')}`
+}
+
 function extractBundle(
   rootKey: string,
   bundles: I18nBundle,
@@ -83,7 +92,6 @@ export function serializeModule(
 
 /**
  * Converts bundles which has language (column) keys into flat 2D array
- * @param bundles
  */
 export function flattenBundles(bundles: I18nBundle): string[][] {
   const columns = Object.keys(bundles)
@@ -94,9 +102,9 @@ export function flattenBundles(bundles: I18nBundle): string[][] {
   }> = []
 
   columns.forEach(column => {
+    /** Update `flattened` */
     function register(pathStack: string[], text: string) {
-      const [ns, ...path] = pathStack
-      const fullKey = `${ns}:${path.join('.')}`
+      const fullKey = buildFullKey(pathStack)
 
       let isFound = false
 
@@ -113,17 +121,18 @@ export function flattenBundles(bundles: I18nBundle): string[][] {
       }
     }
 
+    /** Dig into the bundle object and call `register` if it hits string */
     function access(obj: LocaleBundle | string, pathStack: string[]) {
-      if (obj == null) {
-        return
-      }
-
       if (typeof obj === 'string') {
         register(pathStack, obj)
         return
       }
 
       Object.keys(obj).forEach(key => {
+        if (obj[key] == null) {
+          return
+        }
+
         access(obj[key], [...pathStack, key])
       })
     }
