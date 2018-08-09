@@ -114,6 +114,10 @@ export function flattenBundles(bundles: I18nBundle): string[][] {
     }
 
     function access(obj: LocaleBundle | string, pathStack: string[]) {
+      if (obj == null) {
+        return
+      }
+
       if (typeof obj === 'string') {
         register(pathStack, obj)
         return

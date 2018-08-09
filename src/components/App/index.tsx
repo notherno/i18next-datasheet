@@ -3,6 +3,7 @@ import 'react-datasheet/lib/react-datasheet.css'
 import {
   accessModule,
   extractBundles,
+  flattenBundles,
   serializeModule,
 } from '../../lib/dataLoader'
 import { I18nBundle, LocaleBundle, LocaleModule } from '../../types'
@@ -125,6 +126,7 @@ class App extends React.Component<Props, State> {
   public render() {
     return (
       <div className="container">
+        <button onClick={this.handleExportClick}>EXPORT</button>
         {this.renderModule()}
         <button className="button" onClick={this.save}>
           Save
@@ -181,16 +183,32 @@ class App extends React.Component<Props, State> {
     }
   }
 
+  /**
+   * @todo Fix logic to convert into CSV
+   */
+  private handleExportClick = (e: any) => {
+    const data = flattenBundles(this.getBundle())
+
+    const csv = data
+      .map(row => row.map(col => `"${col.replace('"', '""')}"`).join(','))
+      .join('\n')
+
+    location.href = window.URL.createObjectURL(
+      new Blob([csv], { type: 'text/csv' }),
+    )
+  }
+
+  private getBundle = () =>
+    this.state.langs
+      .map(lang => ({
+        [lang]: serializeModule(lang, this.state.data).root as LocaleBundle,
+      }))
+      .reduce<I18nBundle>((data, bundle) => ({ ...data, ...bundle }), {})
+
   private save = () => {
     const { save } = this.props
 
-    save(
-      this.state.langs
-        .map(lang => ({
-          [lang]: serializeModule(lang, this.state.data).root as LocaleBundle,
-        }))
-        .reduce<I18nBundle>((data, bundle) => ({ ...data, ...bundle }), {}),
-    )
+    save(this.getBundle())
   }
 
   private handleUpdate = (modulePath: string[]) => (
