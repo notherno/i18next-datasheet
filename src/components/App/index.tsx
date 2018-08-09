@@ -1,5 +1,6 @@
 import * as React from 'react'
 import 'react-datasheet/lib/react-datasheet.css'
+import { colorize } from '../../lib/colorizer'
 import {
   accessModule,
   extractBundles,
@@ -91,9 +92,18 @@ class App extends React.Component<Props, State> {
     const targetModule = accessModule(data, path)
 
     return (
-      <section className="message">
+      <section
+        className="message"
+        style={{
+          borderLeft:
+            path.length === 1 ? `6px solid ${colorize(path[0])}` : undefined,
+        }}
+      >
         {path.length > 0 && (
-          <div className="message-header">
+          <div
+            className="message-header"
+            style={{ backgroundColor: colorize(path[0]) }}
+          >
             <p>{path[path.length - 1]}</p>
           </div>
         )}
