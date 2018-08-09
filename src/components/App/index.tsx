@@ -6,6 +6,7 @@ import {
   flattenBundles,
   serializeModule,
 } from '../../lib/dataLoader'
+import { toYAML } from '../../lib/formatter'
 import { I18nBundle, LocaleBundle, LocaleModule } from '../../types'
 import DataSheet, { GridElement } from '../DataSheet'
 import './styles.css'
@@ -184,18 +185,27 @@ class App extends React.Component<Props, State> {
   }
 
   /**
-   * @todo Fix logic to convert into CSV
+   * Exports the whole data as YAML
    */
   private handleExportClick = (e: any) => {
     const data = flattenBundles(this.getBundle())
 
-    const csv = data
-      .map(row => row.map(col => `"${col.replace('"', '""')}"`).join(','))
-      .join('\n')
+    const anchor = document.createElement('a')
 
-    location.href = window.URL.createObjectURL(
-      new Blob([csv], { type: 'text/csv' }),
+    anchor.href = window.URL.createObjectURL(
+      new Blob([toYAML(data)], { type: 'text/vnd.yaml' }),
     )
+
+    // TODO: Make it customizable
+    anchor.download = 'export.yaml'
+
+    document.body.appendChild(anchor)
+
+    // Open download window
+    anchor.click()
+
+    // Remove temporary anchor
+    document.body.removeChild(anchor)
   }
 
   private getBundle = () =>
