@@ -80,3 +80,64 @@ export function serializeModule(
     },
   }
 }
+
+/**
+ * Converts bundles which has language (column) keys into flat 2D array
+ * @param bundles
+ */
+export function flattenBundles(bundles: I18nBundle): string[][] {
+  const columns = Object.keys(bundles)
+
+  let flattened: Array<{
+    key: string
+    texts: { [column: string]: string }
+  }> = []
+
+  columns.forEach(column => {
+    function register(pathStack: string[], text: string) {
+      const [ns, ...path] = pathStack
+      const fullKey = `${ns}:${path.join('.')}`
+
+      let isFound = false
+
+      flattened = flattened.map(candidate => {
+        if (candidate.key === fullKey) {
+          isFound = true
+          return { key: fullKey, texts: { ...candidate.texts, [column]: text } }
+        }
+        return candidate
+      })
+
+      if (!isFound) {
+        flattened.push({ key: fullKey, texts: { [column]: text } })
+      }
+    }
+
+    function access(obj: LocaleBundle | string, pathStack: string[]) {
+      if (typeof obj === 'string') {
+        register(pathStack, obj)
+        return
+      }
+
+      Object.keys(obj).forEach(key => {
+        access(obj[key], [...pathStack, key])
+      })
+    }
+
+    // Recursively access all keys
+    Object.entries(bundles[column]).map(([ns, val]) => {
+      if (typeof val === 'string') {
+        // Must be an object
+        throw new Error('Invalid type of bundle')
+      }
+
+      // Dig into val with its key
+      access(val, [ns])
+    })
+  })
+
+  return flattened.map(row => [
+    row.key,
+    ...columns.map(column => row.texts[column] || ''),
+  ])
+}
