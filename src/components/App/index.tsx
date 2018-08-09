@@ -1,7 +1,9 @@
 import * as React from 'react'
 import 'react-datasheet/lib/react-datasheet.css'
+import { colorize } from '../../lib/colorizer'
 import {
   accessModule,
+  buildFullKey,
   extractBundles,
   flattenBundles,
   serializeModule,
@@ -91,10 +93,19 @@ class App extends React.Component<Props, State> {
     const targetModule = accessModule(data, path)
 
     return (
-      <section className="message">
+      <section
+        className="message"
+        style={{
+          borderLeft:
+            path.length === 1 ? `6px solid ${colorize(path[0])}` : undefined,
+        }}
+      >
         {path.length > 0 && (
-          <div className="message-header">
-            <p>{path[path.length - 1]}</p>
+          <div
+            className="message-header"
+            style={{ backgroundColor: colorize(path[0]) }}
+          >
+            <p>{buildFullKey(path)}</p>
           </div>
         )}
         <div className="message-body">

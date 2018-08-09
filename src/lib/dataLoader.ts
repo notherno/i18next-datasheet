@@ -33,9 +33,9 @@ function accessBundles(bundles: I18nBundle | I18nText, key: string) {
  * Builds key for i18next
  * @todo Use of custom separator symbols
  */
-function buildFullKey(pathStack: string[]) {
+export function buildFullKey(pathStack: string[]) {
   const [ns, ...path] = pathStack
-  return `${ns}:${path.join('.')}`
+  return path.length > 0 ? `${ns}:${path.join('.')}` : ns
 }
 
 function extractBundle(
