@@ -1,4 +1,10 @@
-import { I18nBundle, I18nText, LocaleBundle, LocaleModule } from '../types'
+import {
+  FlattenedModule,
+  I18nBundle,
+  I18nText,
+  LocaleBundle,
+  LocaleModule,
+} from '../types'
 
 export function accessModule(localeModule: LocaleModule, path: string[]) {
   let data: LocaleModule = localeModule
@@ -93,13 +99,10 @@ export function serializeModule(
 /**
  * Converts bundles which has language (column) keys into flat 2D array
  */
-export function flattenBundles(bundles: I18nBundle): string[][] {
+export function flattenBundles(bundles: I18nBundle) {
   const columns = Object.keys(bundles)
 
-  let flattened: Array<{
-    key: string
-    texts: { [column: string]: string }
-  }> = []
+  let flattened: FlattenedModule = []
 
   columns.forEach(column => {
     /** Update `flattened` */
@@ -149,8 +152,5 @@ export function flattenBundles(bundles: I18nBundle): string[][] {
     })
   })
 
-  return flattened.map(row => [
-    row.key,
-    ...columns.map(column => row.texts[column] || ''),
-  ])
+  return flattened
 }

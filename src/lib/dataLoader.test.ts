@@ -91,9 +91,15 @@ describe('flattenBundles', () => {
     const actual = flattenBundles(bundle)
 
     const expected = [
-      ['greetings:formal.hello', 'Hello', 'こんにちは'],
-      ['greetings:casual.hello', 'Hi', 'やあ'],
-      ['greetings:casual.thanks', 'Thanks', 'ありがとう'],
+      {
+        key: 'greetings:formal.hello',
+        texts: { en: 'Hello', ja: 'こんにちは' },
+      },
+      { key: 'greetings:casual.hello', texts: { en: 'Hi', ja: 'やあ' } },
+      {
+        key: 'greetings:casual.thanks',
+        texts: { en: 'Thanks', ja: 'ありがとう' },
+      },
     ]
 
     expect(formatJSON(actual)).toBe(formatJSON(expected))
