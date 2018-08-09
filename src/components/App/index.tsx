@@ -148,20 +148,6 @@ class App extends React.Component<Props, State> {
         <button className="button" onClick={this.exportData}>
           Export
         </button>
-        <div className="columns">
-          {this.state.langs.map(lang => (
-            <div key={lang} className="column">
-              <h2 className="title is-5">{lang}</h2>
-              <pre className="json-viewer">
-                {JSON.stringify(
-                  serializeModule(lang, this.state.data).root,
-                  null,
-                  '  ',
-                )}
-              </pre>
-            </div>
-          ))}
-        </div>
       </div>
     )
   }
