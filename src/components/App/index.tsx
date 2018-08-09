@@ -127,7 +127,6 @@ class App extends React.Component<Props, State> {
   public render() {
     return (
       <div className="container">
-        <button onClick={this.handleExportClick}>EXPORT</button>
         {this.renderModule()}
         <button className="button" onClick={this.save}>
           Save
@@ -145,6 +144,9 @@ class App extends React.Component<Props, State> {
           disabled={this.state.futureData.length === 0}
         >
           Redo
+        </button>
+        <button className="button" onClick={this.exportData}>
+          Export
         </button>
         <div className="columns">
           {this.state.langs.map(lang => (
@@ -182,12 +184,18 @@ class App extends React.Component<Props, State> {
       this.redo()
       return
     }
+
+    if (ev.metaKey && ev.key === 'e') {
+      ev.preventDefault()
+      this.exportData()
+      return
+    }
   }
 
   /**
    * Exports the whole data as YAML
    */
-  private handleExportClick = (e: any) => {
+  private exportData = () => {
     const data = flattenBundles(this.getBundle())
 
     const anchor = document.createElement('a')
