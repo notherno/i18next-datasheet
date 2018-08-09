@@ -7,6 +7,11 @@
   padding: 0.5em;
 }
 
+.message .message-header {
+  font-weight: bold;
+  font-family: Menlo, Monaco, 'Ricty Discord', Consolas, monospace;
+}
+
 .message .message-body {
   border: none;
   padding: 0;
@@ -41,6 +46,11 @@ textarea.data-editor {
     max-width: 98vw;
     width: 98vw;
   }
+}
+
+.data-grid thead td {
+  font-family: Menlo, Monaco, 'Ricty Discord', Consolas, monospace;
+  font-size: 0.8em;
 }
 
 .data-grid-container .data-grid .cell {
