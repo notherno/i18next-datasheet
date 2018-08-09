@@ -3,6 +3,7 @@ import 'react-datasheet/lib/react-datasheet.css'
 import { colorize } from '../../lib/colorizer'
 import {
   accessModule,
+  buildFullKey,
   extractBundles,
   flattenBundles,
   serializeModule,
@@ -104,7 +105,7 @@ class App extends React.Component<Props, State> {
             className="message-header"
             style={{ backgroundColor: colorize(path[0]) }}
           >
-            <p>{path[path.length - 1]}</p>
+            <p>{buildFullKey(path)}</p>
           </div>
         )}
         <div className="message-body">
