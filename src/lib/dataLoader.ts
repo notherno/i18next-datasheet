@@ -38,6 +38,20 @@ export function buildFullKey(pathStack: string[]) {
   return path.length > 0 ? `${ns}:${path.join('.')}` : ns
 }
 
+/**
+ * Destructs i18next key string and returns path stack
+ * @todo Use of custom separator symbols
+ */
+export function destructFullKey(key: string) {
+  const [ns, ...rest] = key.split(':')
+
+  if (rest.length !== 1) {
+    throw new Error('Namespace separator can only appear once')
+  }
+
+  return [ns, ...rest[0].split('.')]
+}
+
 function extractBundle(
   rootKey: string,
   bundles: I18nBundle,
@@ -97,9 +111,9 @@ export function serializeModule(
 }
 
 /**
- * Converts bundles which has language (column) keys into flat 2D array
+ * Converts bundles which has language (column) keys into flat array
  */
-export function flattenBundles(bundles: I18nBundle) {
+export function flattenBundles(bundles: I18nBundle): FlattenedModule {
   const columns = Object.keys(bundles)
 
   let flattened: FlattenedModule = []
@@ -153,4 +167,61 @@ export function flattenBundles(bundles: I18nBundle) {
   })
 
   return flattened
+}
+
+/**
+ * Restructure the while locale bundles from imported flattened array
+ */
+export function restructureBundles(flattened: FlattenedModule): I18nBundle {
+  const bundle: I18nBundle = {}
+
+  function putText(ref: LocaleBundle, pathStack: string[], text: string) {
+    if (pathStack.length === 0) {
+      return
+    }
+
+    if (pathStack.length === 1) {
+      const textKey = pathStack[0]
+
+      if (ref[textKey] != null) {
+        throw new Error('Duplicated key assignment detected')
+      }
+
+      ref[textKey] = text
+      return
+    }
+
+    const [key, ...rest] = pathStack
+
+    let target: LocaleBundle
+
+    if (ref[key] == null) {
+      target = ref[key] = {}
+    } else if (typeof ref[key] === 'object') {
+      target = ref[key] as LocaleBundle
+    } else {
+      throw new Error('Module cannot be placed')
+    }
+
+    putText(target, rest, text)
+  }
+
+  flattened.forEach(row => {
+    if (typeof row.key !== 'string') {
+      throw new Error('key parameter must be set')
+    }
+
+    const pathStack = destructFullKey(row.key)
+
+    // Assign objects
+    Object.entries(row.texts).forEach(([column, text]) => {
+      if (typeof column !== 'string' || typeof text !== 'string') {
+        throw new Error('Somethings went wrong with texts')
+      }
+
+      putText(bundle, [column, ...pathStack], text)
+    })
+  })
+
+  return bundle
 }
