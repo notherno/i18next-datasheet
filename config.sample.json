@@ -1,0 +1,20 @@
+{
+  "sourceDir": "data",
+  "resources": [
+    {
+      "name": "en",
+      "file": "en.json",
+      "type": "json"
+    },
+    {
+      "name": "ja",
+      "file": "ja.json",
+      "type": "json"
+    },
+    {
+      "name": "de",
+      "file": "de.json",
+      "type": "json"
+    }
+  ]
+}
