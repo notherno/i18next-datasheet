@@ -13,5 +13,5 @@ export function toYAML(data: any): string {
 }
 
 export function toJSON(data: any): string {
-  return JSON.stringify(data, undefined, '  ')
+  return JSON.stringify(data, undefined, '  ') + '\n'
 }

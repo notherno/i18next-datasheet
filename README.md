@@ -19,3 +19,11 @@ $ yarn start
 ```
 
 to start dev-server
+
+## Configuration
+
+Copy setting file and write your own setting for translation data
+
+```
+$ cp config.sample.json config.json
+```
