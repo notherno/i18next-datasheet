@@ -6,9 +6,10 @@ import {
   buildFullKey,
   extractBundles,
   flattenBundles,
+  restructureBundles,
   serializeModule,
 } from '../../lib/dataLoader'
-import { toYAML } from '../../lib/formatter'
+import { fromYAML, toYAML } from '../../lib/formatter'
 import { I18nBundle, LocaleBundle, LocaleModule } from '../../types'
 import DataSheet, { GridElement } from '../DataSheet'
 import './styles.css'
@@ -67,6 +68,8 @@ function updateTexts(
 }
 
 class App extends React.Component<Props, State> {
+  private fileInput: HTMLInputElement | null
+
   constructor(props: Props) {
     super(props)
 
@@ -159,6 +162,16 @@ class App extends React.Component<Props, State> {
         <button className="button" onClick={this.exportData}>
           Export
         </button>
+        <button className="button" onClick={this.handleImportClick}>
+          Import
+        </button>
+        <input
+          type="file"
+          ref={e => (this.fileInput = e)}
+          onChange={this.importData}
+          accept=".yaml,.yml"
+          style={{ display: 'none' }}
+        />
       </div>
     )
   }
@@ -211,6 +224,45 @@ class App extends React.Component<Props, State> {
 
     // Remove temporary anchor
     document.body.removeChild(anchor)
+  }
+
+  private importData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.currentTarget
+
+    if (input.files == null) {
+      return
+    }
+
+    const file = input.files.item(0)!
+
+    const reader = new FileReader()
+
+    reader.addEventListener('load', () => {
+      const { result } = reader
+
+      const bundles = restructureBundles(fromYAML(result))
+
+      const { langs, data, pastData } = this.state
+
+      // Update data
+      this.setState({
+        data: extractBundles(bundles, langs[0]),
+        pastData: [data, ...pastData],
+      })
+    })
+
+    reader.readAsText(file)
+  }
+
+  private handleImportClick = () => {
+    const { fileInput } = this
+
+    if (fileInput == null) {
+      return
+    }
+
+    // Open file dialog
+    fileInput.click()
   }
 
   private getBundle = () =>

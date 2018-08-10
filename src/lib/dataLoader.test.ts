@@ -1,5 +1,9 @@
-import { I18nBundle } from '../types'
-import { extractBundles, flattenBundles } from './dataLoader'
+import { FlattenedModule, I18nBundle } from '../types'
+import {
+  extractBundles,
+  flattenBundles,
+  restructureBundles,
+} from './dataLoader'
 
 const bundle: I18nBundle = {
   en: {
@@ -101,6 +105,51 @@ describe('flattenBundles', () => {
         texts: { en: 'Thanks', ja: 'ありがとう' },
       },
     ]
+
+    expect(formatJSON(actual)).toBe(formatJSON(expected))
+  })
+})
+
+describe('restructureBundles', () => {
+  it('loads flattened bundles and outputs structured bundle', () => {
+    const input: FlattenedModule = [
+      {
+        key: 'greetings:formal.hello',
+        texts: { en: 'Hello', ja: 'こんにちは' },
+      },
+      { key: 'greetings:casual.hello', texts: { en: 'Hi', ja: 'やあ' } },
+      {
+        key: 'greetings:casual.thanks',
+        texts: { en: 'Thanks', ja: 'ありがとう' },
+      },
+    ]
+
+    const actual = restructureBundles(input)
+
+    const expected: I18nBundle = {
+      en: {
+        greetings: {
+          formal: {
+            hello: 'Hello',
+          },
+          casual: {
+            hello: 'Hi',
+            thanks: 'Thanks',
+          },
+        },
+      },
+      ja: {
+        greetings: {
+          formal: {
+            hello: 'こんにちは',
+          },
+          casual: {
+            hello: 'やあ',
+            thanks: 'ありがとう',
+          },
+        },
+      },
+    }
 
     expect(formatJSON(actual)).toBe(formatJSON(expected))
   })
