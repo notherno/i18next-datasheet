@@ -28,7 +28,7 @@ function resolvePath(sourceDir: string, filename: string) {
 
 const router = express.Router()
 
-router.use(bodyParser.json())
+router.use(bodyParser.json({ limit: '50mb' }))
 
 router
   .route('/data')
