@@ -53,7 +53,8 @@
     "start": "ts-node scripts/start.ts",
     "build": "ts-node scripts/build.ts",
     "test": "ts-node scripts/test.ts --env=jsdom",
-    "storybook": "start-storybook -p 9001 -c .storybook"
+    "storybook": "start-storybook -p 9001 -c .storybook",
+    "update": "yarn upgrade-interactive --latest"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.4.7",
