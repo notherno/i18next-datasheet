@@ -1,14 +1,14 @@
 declare module 'react-dev-utils/*' {
-  const module: any
-  export = module
+  const _: any
+  export = _
 }
 
 declare module 'tsconfig-paths-webpack-plugin' {
-  const module: any
-  export = module
+  const _: any
+  export = _
 }
 
 declare module 'postcss-flexbugs-fixes' {
-  const module: any
-  export = module
+  const _: any
+  export = _
 }

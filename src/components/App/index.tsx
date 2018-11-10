@@ -240,7 +240,11 @@ class App extends React.Component<Props, State> {
     reader.addEventListener('load', () => {
       const { result } = reader
 
-      const bundles = restructureBundles(fromYAML(result))
+      if (result === null) {
+        return
+      }
+
+      const bundles = restructureBundles(fromYAML(result as string))
 
       const { langs, data, pastData } = this.state
 
